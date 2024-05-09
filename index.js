@@ -1,13 +1,17 @@
-require('dotenv').config()
+import 'dotenv/config'
+import commands from './commands/index.js'
 
 // Discord.js versions ^13.0 require us to explicitly define client intents
-const { Client, GatewayIntentBits } = require('discord.js');
-const client = new Client({ intents: [
-  GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMessages,
-  GatewayIntentBits.MessageContent,
-]});
-
+import { Client, GatewayIntentBits } from 'discord.js';
+const client = new Client(
+  { 
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ]
+  }
+);
 
 const prefix = '!'
 
@@ -24,13 +28,11 @@ client.on('messageCreate', async message => {
   if (!message.content.startsWith(prefix)) return
 
   const args = messageSplit.slice(1)
-  console.log(args)
 
-  if (command === 'ping') {
-    message.reply('pong')
-  }
+  if (!commands[command]) return // call the help command here to show user list of available commands
+
+  await commands[command].execute(message, ...args)
 });
-
 
 // Log into our bot
 client.login(process.env.CLIENT_TOKEN);

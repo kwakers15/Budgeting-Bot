@@ -1,15 +1,11 @@
-const { google } = require('googleapis');
-const { googleAuth, spreadsheetId } = require('../auth/googleAuth')
+import { sheets, spreadsheetId } from '../auth/googleAuth.js'
 
 const dateRegex = new RegExp(/(\d{4})-(\d{2})-(\d{2}).*/)
 const newSheetName = new Date().toISOString().match(dateRegex).slice(1,4).join("/")
-const columns = ["Entertainment", "Food", "Jea", "Bills", "Other"]
+const columns = ["Fun", "Fun-Notes", "Food", "Food-Notes", "Jea", "Jea-Notes", "Bills", "Bills-Notes", "Other", "Other-Notes"]
 
 async function createWeeklySheet() {
   try {
-    // google sheet instance
-    const sheets = await google.sheets({ version: 'v4', auth: googleAuth});
-
     const addSheetRequest = {
       // The ID of the spreadsheet
       spreadsheetId,
@@ -27,9 +23,9 @@ async function createWeeklySheet() {
 
     const addColumnsRequest = {
       spreadsheetId,
-      range: `${newSheetName}!A1:E1`,
+      range: `${newSheetName}!A1:J1`,
       valueInputOption: "USER_ENTERED",
-      resource: { range: `${newSheetName}!A1:E1`, majorDimension: "ROWS", values: [columns] },
+      resource: { range: `${newSheetName}!A1:J1`, majorDimension: "ROWS", values: [columns] },
     }
     await sheets.spreadsheets.batchUpdate(addSheetRequest)
     await sheets.spreadsheets.values.update(addColumnsRequest)
