@@ -1,8 +1,8 @@
 import { sheets, spreadsheetId } from '../auth/googleAuth.js'
+import { formatDate } from '../util/common.js'
+import { COLUMNS } from '../util/constants.js';
 
-const dateRegex = new RegExp(/(\d{4})-(\d{2})-(\d{2}).*/)
-const newSheetName = new Date().toISOString().match(dateRegex).slice(1,4).join("/")
-const columns = ["Fun", "Fun-Notes", "Food", "Food-Notes", "Jea", "Jea-Notes", "Bills", "Bills-Notes", "Other", "Other-Notes"]
+const newSheetName = formatDate(new Date().toLocaleString().split(",")[0])
 
 async function createWeeklySheet() {
   try {
@@ -23,17 +23,17 @@ async function createWeeklySheet() {
 
     const addColumnsRequest = {
       spreadsheetId,
-      range: `${newSheetName}!A1:J1`,
+      range: `${newSheetName}!A1:N1`,
       valueInputOption: "USER_ENTERED",
-      resource: { range: `${newSheetName}!A1:J1`, majorDimension: "ROWS", values: [columns] },
+      resource: { range: `${newSheetName}!A1:N1`, majorDimension: "ROWS", values: [COLUMNS.flatMap(column => [column, column + " notes"])] },
     }
     await sheets.spreadsheets.batchUpdate(addSheetRequest)
     await sheets.spreadsheets.values.update(addColumnsRequest)
   }
 
   catch(err) {
-    console.log("readSheet func() error", err);  
+    console.log(err.message);  
   }
 }
 
-createWeeklySheet();
+createWeeklySheet()

@@ -21,18 +21,24 @@ client.on('ready', () => {
 
 
 client.on('messageCreate', async message => {
-  const messageSplit = message.content.slice(prefix.length).split(/ +/)
-  const command = messageSplit[0].toLowerCase()
-
   if (message.author.bot) return
   if (!message.content.startsWith(prefix)) return
+  
+  const regex = new RegExp(/[^\s"']+|"[^"]*"|'[^']*'/g);
+  const args = [];
+  message.content.match(regex).forEach(element => {
+    if (!element) return;
+    return args.push(element.replaceAll(/"/gi, ''));
+  });
+  console.log(args);
 
-  const args = messageSplit.slice(1)
+  const command = args[0];
 
-  if (!commands[command]) return // call the help command here to show user list of available commands
-
-  await commands[command].execute(message, ...args)
+  if (!commands[command]) {
+    return // call the help command here to show user list of available commands
+  }
+  await commands[command].execute(message, ...(args.slice(1)))
 });
 
-// Log into our bot
+// // Log into our bot
 client.login(process.env.CLIENT_TOKEN);

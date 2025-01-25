@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import 'dotenv/config';
 import { google } from 'googleapis';
 
 const clientEmail = process.env.GAPI_SERVICE_EMAIL;
